@@ -1,0 +1,30 @@
+{
+ "T": 10000000000000.0,
+ "P": 131072,
+ "N": 1261566,
+ "L": 19,
+ "float_sec": 2.0253820419311523,
+ "arb_sec": 26.188642263412476,
+ "fallback_sec": 2.384185791015625e-05,
+ "arb_cost_vs_float": 12.930223395504308,
+ "certified_frac": 1.0,
+ "uncertified": 0,
+ "referee_max_obs_err": 1.5500489780606586e-11,
+ "referee_min_slack_ratio": 157842.35644633803,
+ "referee_violations": 0,
+ "arb_median_rad": 2.9679453491214536e-10,
+ "speedup_vs_arb_direct": 7590.482885838742,
+ "turing": {
+  "a": 10000000000060.0,
+  "b": 10000000000460.0,
+  "L": 50.0,
+  "found": 1789,
+  "N_b_upper": 43124192299160.1,
+  "N_a_lower": 43124192297370.91,
+  "max_possible": 1789,
+  "proven": true,
+  "Na_int": 43124192297371,
+  "Nb_int": 43124192299160
+ },
+ "label": "NUM"
+}

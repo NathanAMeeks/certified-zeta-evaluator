@@ -1,0 +1,4 @@
+1e+13 zeros=3.08e+13 ms/zero@T=0.35 core-h=3.14e+06 $=94,242
+3e+13 zeros=1.22e+14 ms/zero@T=0.39 core-h=1.35e+07 $=406,262
+1e+14 zeros=4.56e+14 ms/zero@T=0.43 core-h=5.54e+07 $=1,662,423
+1e+15 zeros=5.03e+15 ms/zero@T=0.50 core-h=7.26e+08 $=21,790,551

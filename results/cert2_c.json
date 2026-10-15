@@ -1,0 +1,17 @@
+{
+ "T": 267653395647.0,
+ "H": 2,
+ "K": 63,
+ "N": 206393,
+ "points": 10000,
+ "certified_frac": 1.0,
+ "fallbacks": 0,
+ "uncertified": 0,
+ "taylor_sec": 32.274324893951416,
+ "fallback_sec": 2.47955322265625e-05,
+ "arb_direct_sec_per_pt": 0.2370453675587972,
+ "speedup_vs_arb_direct": 73.44698493988143,
+ "certified_signchanges": 155,
+ "label": "NUM",
+ "table_zeros": 148
+}

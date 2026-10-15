@@ -1,0 +1,17 @@
+{
+ "T": 10000.0,
+ "H": 2,
+ "K": 20,
+ "N": 39,
+ "points": 10000,
+ "certified_frac": 0.9993,
+ "fallbacks": 7,
+ "uncertified": 7,
+ "taylor_sec": 0.5371179580688477,
+ "fallback_sec": 0.0006062984466552734,
+ "arb_direct_sec_per_pt": 0.00011809666951497395,
+ "speedup_vs_arb_direct": 2.196231025177291,
+ "certified_signchanges": 945,
+ "label": "NUM",
+ "table_zeros": 945
+}

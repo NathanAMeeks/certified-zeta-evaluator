@@ -1,0 +1,4 @@
+1e+13 zeros=3.08e+13 s/zero(py)=1.69ms core-h(py)=1.45e+07 $py=433,673 $C(÷20)=21,684
+3e+13 zeros=1.22e+14 s/zero(py)=1.76ms core-h(py)=5.96e+07 $py=1,788,134 $C(÷20)=89,407
+1e+14 zeros=4.56e+14 s/zero(py)=1.84ms core-h(py)=2.33e+08 $py=6,990,039 $C(÷20)=349,502
+1e+15 zeros=5.03e+15 s/zero(py)=2.08ms core-h(py)=2.91e+09 $py=87,236,718 $C(÷20)=4,361,836
