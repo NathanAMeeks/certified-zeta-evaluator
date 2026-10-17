@@ -1,0 +1,1 @@
+{"T":10000000000000,"P":1048576,"N":1261566,"L":19,"M":2097152,"certified":1048576,"signchanges":46888,"found_coarse":46145,"Na_lower":"43124192297371","Nb_upper":"43124192343516","max_possible":46145,"refine_windows":0,"refine_points":0,"refine_disagreements":0,"found":46145,"proven":1,"sec_setup":2.203,"sec_nufft":11.243,"sec_points":3.055,"sec_refine":0.000,"sec_total":16.636}

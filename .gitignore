@@ -1,3 +1,11 @@
 c/fftz
 *.bin
 __pycache__/
+*.bin
+c/fftz
+c/inproc/fftzr
+c/inproc/fftzr8
+c/closepair/fftzcp
+c/closepair/tz/fftztz
+c/speed/fftzsp
+*.err

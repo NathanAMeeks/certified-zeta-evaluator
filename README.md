@@ -50,11 +50,32 @@ Speed:
 
 The float-vs-Arb referee check found 0 bound violations. Details are in `docs/C_PORT.md`, `docs/FFT_BATCH.md` and `results/`. Cost extrapolations in `docs/PUSH_HEIGHT.md` and `results/*push_table.txt` are [HEUR].
 
-## Known limits
-- **No close-pair refinement step.** In 2^20–2^21-point windows at 3e12, rare close pairs of zeros fell between grid points, so Turing's check (correctly) refused to certify those windows: 2–18 zeros were unaccounted for. Production use needs extra certified evaluations in the gaps Turing flags. That step is not built.
-- The C port has no per-point Arb-direct fallback. These runs never needed it.
-- The combine and scatter are still done in Arb. They are the current bottleneck.
-- `docs/REFEREE_FFT.md` lists 5 flaws in the earlier float bound (`fftb.py`). `fftarb.py` and the C port fix them. Treat `fftb.py` as superseded.
+## Close-pair finder [NUM][LEM] (`c/closepair/fftzcp.c`, `docs/CLOSE_PAIR.md`)
+When the certified sign-change count falls short of Turing's maximum, the finder adds certified evaluations in targeted gaps (deficit-targeted refinement, in the same pass) and loops until the window is proven or its budget runs out.
+- **Lemma CP (soundness):** a window is reported *proven* only when the certified sign changes equal Turing's count exactly. Where refinement looks is heuristic and affects only speed and whether a window finishes proven; it cannot produce a false "proven". With zero refinement budget, windows are correctly reported unproven.
+- **Lemma TZ (zero-free gap test, `c/closepair/tz/fftztz.c`):** a proven Taylor/linear-interpolation bound on Z'' certifies ~99.8% of grid gaps as zero-free, so refinement only looks at suspect gaps. Across 10 windows all 15 missed pairs were in suspect gaps; 0 violations. It does not prove uniqueness inside a sign-change gap (no certified bound on R'); Turing's count still supplies that.
+- All 10 test windows proven, each needing at most one refinement round, 0 sign disagreements between coarse and fine grids.
+- Earlier in-process refinement prototypes: `c/inproc/` (`docs/REFINE.md`).
+
+## Speed results [NUM] (`c/speed/fftzsp.c`, `docs/SPEED.md`)
+Main sums in double precision with rigorous (hand-derived) error bounds, lower Arb precision, and ~60× cheaper refinement:
+- **0.090 ms/zero/core at 3e12** (was 0.519) and **0.107 ms/zero/core at 1e13** (was 0.820), 2.4 GHz Xeon.
+- Contiguous proven chains: **132,506 zeros near 3e12** and **138,439 zeros near 1e13**, with Turing endpoint counts matching across windows.
+- Best spacing ~5 evaluations per zero; wider spacing makes windows fail as unproven, never wrongly proven.
+
+**Crude per-GHz comparison [HEUR]:** Platt–Trudgian (arXiv:2004.09765) ≈ 7.9 ms·GHz per zero; Gourdon (2004, not interval-certified) ≈ 0.011; ours ≈ 0.22–0.26. That suggests ~30× fewer cycles per zero than Platt–Trudgian and ~20× more than Gourdon. Caveats: their figures average a full production run over all heights, ours are short top-height windows; different CPU generations make GHz normalization crude; ours is not a production run.
+
+## Prior art
+FFT-batched Riemann–Siegel evaluation is the Odlyzko–Schönhage method (1988). Gourdon (2004) and Platt (with Trudgian, 2021, fully interval-certified) used versions of it for record verifications. **This repository is an independent certified implementation, not a new method of proof.** Its contributions are a fresh reproducible implementation, the close-pair finder, and the measured timings.
+
+## Open items / known limits
+- **Referee needed:** the Higham FFT bound application and the hand-derived double-precision error bounds coded in `c/speed/fftzsp.c`.
+- **Gabcke (1979) constant:** second independent source not yet confirmed.
+- **No independent reimplementation** has checked these results.
+- The C code has no per-point Arb-direct fallback (never needed in these runs).
+- `docs/REFEREE_FFT.md` lists 5 flaws in the earlier float bound (`python/fftb.py`), fixed in `fftarb.py` and the C code; treat `fftb.py` as superseded.
+
+Build the new programs with `FLINT_ROOT=/prefix c/speed/build.sh` (likewise `c/closepair/build.sh`, `c/closepair/tz/build.sh`, `c/inproc/build.sh`). Run scripts are in `scripts/` (they expect the binary in the working directory).
 
 ## Layout
-`python/` evaluators · `c/` C/FLINT port · `docs/` method write-ups and referee notes · `results/` JSON outputs and cost tables.
+`python/` evaluators · `c/` C/FLINT port · `docs/` method write-ups and referee notes · `results/` JSON outputs and cost tables · `scripts/` run/analysis scripts.
