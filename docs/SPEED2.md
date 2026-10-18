@@ -2,8 +2,8 @@
 Code: c/interp/fftzi_v7.c (developed as refine/speed2/fftzi.c: fftzsp.c with all referee patches, plus Lemma BL, plus the v7 midpoint probe). Build: c/interp/build.sh (set FLINT_ROOT).
 Run: `./fftzi T delta P A B Lw /dev/null dbl` (P must be a power of 2, otherwise EPH=1e300 and nothing is certified. That is a safe failure.)
 Env: NOINTERP=1 gives the old behaviour. DIPTAU (default 3), NDIV (8), BLTGT (92), MAXR (20 interp rounds).
-Gabcke: this build keeps the cautious 0.127·(t/2π)^{-3/4}, which is valid and about 4× looser than the published 0.127·t^{-3/4}.
-Status: candidate, unrefereed. Committed to the repo on branch v7-interp; not yet pushed.
+Gabcke: uses the published 0.127·t^{-3/4}, t ≥ 200 (tightened 2026-10-28 from the cautious 0.127·(t/2π)^{-3/4}, about 3.97× looser; see docs/GABCKE_SOURCES.md). v7/v8 timings below were measured with the looser form.
+Status: candidate, unrefereed. On GitHub main since 2026-10-28.
 
 ## 1. Ranked options (gain = wall-time factor on top of the current build)
 | # | Idea | Gain | Certification path | Effort | Status |

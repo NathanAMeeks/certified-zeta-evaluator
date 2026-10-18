@@ -16,7 +16,7 @@ The cert2 and Arb-direct times are scaled linearly from 10k-point and 100-point 
 Remaining rigor caveats:
 1. The NUFFT/FFT path is float64 with a hand-derived error bound, not Arb balls. It uses a Higham-type summation bound (N+L+4)u·S0 and an FFT bound of 5u·log2M·√M·‖G‖₁. It also adds phase-rounding terms for the P/2 shift and for the x_n mod 1 reduction. The bounds are conservative but need a referee to check them.
 2. The θ Taylor series and C0 are evaluated in float with explicit slack, and C0 is flagged when |cos2πp|<1e-3.
-3. Gabcke's constant 0.127(t/2π)^{-3/4}, t≥200 (Gabcke 1979).
+3. Gabcke's constant 0.127 t^{-3/4}, t≥200 (Gabcke 1979; see docs/GABCKE_SOURCES.md).
 4. A grid of certified signs gives only a LOWER bound on the zero count. Proving that no zeros were missed between grid points still needs Turing's method / an S(t) bound, which was not run here. The table agreement at 2.68e11 is empirical confirmation only.
 Verdict: batching works. It is 24–790× faster than cert2 auto_HK and up to 6×10^4× faster than certified direct RS, with a ≥99.95% certified fraction and exact agreement with Odlyzko's table. The gain grows with N and with the number of points per transform. It is NUM*, not NUM, until caveat 1 is replaced by Arb (or a referee accepts the float bound).
 

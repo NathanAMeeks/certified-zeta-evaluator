@@ -2,7 +2,7 @@
 import numpy as np,time,json,gzip,math
 from flint import acb,arb,acb_series,ctx
 ctx.prec=110; PI=arb.pi()
-def gab(t): return arb(0.127)*(t/(2*PI))**arb(-0.75)   # Gabcke 1979, t>=200
+def gab(t): return arb(0.127)*t**arb(-0.75)   # Gabcke 1979: |R0|<=0.127 t^{-3/4}, t>=200
 def theta_ser(c,H,K=4):   # theta(c+v) coeffs on point c, and ball enclosure of 3rd coeff on [c-H,c+H]
     ctx.cap=K
     f=lambda t:(acb_series([acb(0.25,t/2),acb(0,0.5)]).lgamma())
@@ -65,7 +65,7 @@ def run(T,span,npts,H,tab):
 
 def auto_HK(T,density):  # tuned rule: min (N*K+5500)/(2H*density)+10K s.t. Taylor rem <= 0.1*Gabcke; prec=64+log2(T)+log2(N)
     import math
-    N=int(math.sqrt(T/(2*math.pi))); R=math.log(N)/2; S0=2*math.sqrt(N); lt=math.log(0.1*0.127*(T/(2*math.pi))**-0.75)
+    N=int(math.sqrt(T/(2*math.pi))); R=math.log(N)/2; S0=2*math.sqrt(N); lt=math.log(0.1*0.127*T**-0.75)
     best=None
     for i in range(60):
         H=0.05*(640**(i/59)); K=1

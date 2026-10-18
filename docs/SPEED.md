@@ -31,7 +31,7 @@ u=2^-53. All bounds are absolute, added to F as Arb error (EPH, ≈1–2e-7 at P
 - Bucket sums: γ_cmax·Σ|c|, where Σ|c| ≤ S0·2^-k(1+ρ)/(1−ρ) and |e_n|≤1/2. FFT: unchanged Higham Thm 24.2 bound.
 - F accumulation: |fac_k| ≤ (π/2)^k/k!. Per term: F_k(√2·err_k + (S_k+√2·err_k)·4(k+2)u), plus γ_{Lt+2} times the sum of the terms.
 - Assumes IEEE-754 binary64 with round-to-nearest and correctly rounded sqrt/div/fma; there is no libm sin/cos in the certified path. These are Higham-style hand bounds, not formally verified.
-Still open from before: Trudgian's constants rechecked; no independent reimplementation. (Gabcke second source: done, `docs/GABCKE_CHECK.md`; empirical double-vs-Arb check: `docs/DP_CHECK.md`.)
+Gabcke second sources confirmed (`docs/GABCKE_SOURCES.md`, `docs/GABCKE_CHECK.md`); form corrected to 0.127 t^{-3/4} on 2026-10-18. Empirical double-vs-Arb check: `docs/DP_CHECK.md`. Still open: Trudgian constant cross-check; no independent reimplementation; referee of hand-derived double-precision bounds.
 
 ## Cost roadmap, 3e12→1e13 (3.076e13 zeros, $0.03/core-hr)
 Before: 0.31 ms/zero (C_PORT) → about $79k by this count (C_PORT quoted $94k). Now, 0.090–0.107 ms/zero → 7.7–9.1e5 core-hr → **about $23–27k**.

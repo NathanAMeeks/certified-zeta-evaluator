@@ -1,7 +1,7 @@
 # Certified Taylor-reuse Z(t) [NUM] (cert.py, cert_results.json)
 The certified bound has three parts:
 - Taylor remainder: S0·(R|v|)^K/K!·e^{R|v|}, where S0=Σn^{-1/2}, R=max|ln n − c| and c is the center of ln n. The order K is chosen so this is ≤ 0.1×Gabcke.
-- Gabcke's RS remainder bound after the C0 term: 0.127(t/2π)^{-3/4}.
+- Gabcke's RS remainder bound after the C0 term: 0.127 t^{-3/4}.
 - Higham-style float rounding: S0·e^{R|v|}·(δφ+(N+2K+8)u), with u=2^-53. The phases T·ln n mod 2π come from mpmath at 40 digits, and θ(t) from mpmath at each point, so θ has no Taylor remainder.
 A sign is certified when |Z̃| > bound. Points near the removable singularity of C0 (|cos 2πp|<1e-3) are flagged. Fallback is the direct RS sum with the same Gabcke + rounding bound. Arb's own zeta is infeasible at 2.68e11, because its cost grows like t.
 10,000 grid points per height. Best H (Taylor radius) per height:
@@ -26,7 +26,7 @@ Everything is in Arb (python-flint 0.9, 110-bit precision):
 | 1e6 | 2 | 32 | 100% | 0 / 0 | 0.87 s | 0.50 ms | 5.7× | 953 (no table) |
 | 2.68e11 | 2 | 63 | 100% | 0 / 0 | 32 s | 0.237 s | 73× | 155 = 148 table + 7 below table start |
 At 1e4, the 7 uncertified points are |Z| below Gabcke's 5e-4 margin, right at zeros. The direct method can't certify them either. None of them hides a sign change.
-Remaining caveat: only Gabcke's constant, |Z(t) − (RS main sum + C0 term)| < 0.127·t^{-3/4} for t ≥ 200 (the code uses the looser 0.127·(t/2π)^{-3/4}). Source: W. Gabcke, "Neue Herleitung und explizite Restabschätzung der Riemann-Siegel-Formel", Dissertation, Göttingen, 1979, doi:10.53846/goediss-5113. Restated in A. Kuznetsov, "Series expansions for the Riemann zeta function", arXiv:2312.03261. (An earlier version of this note wrongly cited Platt–Trudgian; their paper, Bull. London Math. Soc. 53 (2021), does not state it.) See `docs/GABCKE_CHECK.md`.
+Remaining caveat: only Gabcke's constant, |Z(t) − (RS main sum + C0 term)| ≤ 0.127·t^{-3/4} for t ≥ 200. Source: W. Gabcke, "Neue Herleitung und explizite Restabschätzung der Riemann-Siegel-Formel", Dissertation, Göttingen, 1979, doi:10.53846/goediss-5113. Restated in A. Kuznetsov, arXiv:2312.03261; same numeric form in Gourdon–Sebah (2003) and Platt–Trudgian arXiv:1507.01261; Arias de Reyna, Math. Comp. 80 (2011), cites Gabcke's remainder bounds. Details: docs/GABCKE_SOURCES.md.
 Verdict [NUM]: certified sign evaluation is 73× faster than all-Arb direct RS at 2.68e11. Every grid sign is certified, and the sign changes match Odlyzko's table exactly. The speedup grows with N, roughly like N/K.
 
 ## v3: auto-tuner (auto_HK in cert2.py; tune.py, tune_results*.json) [NUM]

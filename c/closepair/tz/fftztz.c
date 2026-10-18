@@ -37,8 +37,8 @@ static void theta_ser(arb_t *co,const arb_t c,double rad,slong prec){
   arb_mul_2exp_si(t,lp,-1); arb_sub(co[1],co[1],t,prec);
   acb_poly_clear(h);acb_poly_clear(r);acb_clear(z);arb_clear(t);arb_clear(lp);
 }
-static void gabcke(arb_t g,const arb_t t,slong prec){ arb_t x; arb_init(x); arb_const_pi(x,prec); arb_mul_2exp_si(x,x,1);
-  arb_div(x,t,x,prec); arb_set_d(g,-0.75); arb_pow(x,x,g,prec); arb_set_d(g,0.127); arb_mul(g,g,x,prec); arb_clear(x);}
+static void gabcke(arb_t g,const arb_t t,slong prec){ /* Gabcke 1979: |R0| <= 0.127 t^{-3/4}, t>=200 */
+  arb_t x; arb_init(x); arb_set_d(g,-0.75); arb_pow(x,t,g,prec); arb_set_d(g,0.127); arb_mul(g,g,x,prec); arb_clear(x);}
 /* C0 term; returns 0 if |cos 2pi p|<1e-3 */
 static int c0term(arb_t res,const arb_t t,slong N,slong prec){
   arb_t a,p,pi2,num,den,x; arb_init(a);arb_init(p);arb_init(pi2);arb_init(num);arb_init(den);arb_init(x);

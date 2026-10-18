@@ -16,13 +16,13 @@ Proof. Z is real and continuous on R. Each index i with a sign change gives an o
 Corollary (never a false PROVEN). The program returns PROVEN only when found = max with no disagreement. Refinement only adds points to S, so k can only grow, and the lemma gives k ≤ N(T+b) − N(T+a) ≤ max whenever A1–A2 hold. So found > max means a broken assumption, and the program reports ERROR. Targeting quality affects run time and whether the stop is PROVEN or UNPROVEN, never correctness.
 Implementation obligations behind A1:
 - Positions. Refinement grids start at integer offsets o, so T+o is exact in binary64, and t = (T+o) + q·dr is formed exactly in Arb (dr is the exact binary64 value). The double u used for sorting has error ≲ 1e-12. Any two points within 1e-9 are treated as coincident: same sign means the duplicate is skipped, opposite signs abort as a disagreement. So sorting by u gives the true order of all retained points.
-- Z(t) = 2Re(e^{iθ(t)} Σ_{n≤N} n^{-1/2} n^{-it}) + C0 + R. The Σ is from the batched Taylor-NUFFT: Arb phases, Taylor truncation enclosed by the explicit bound S0(πr)^L e^{πr}/L!, and the DFT done in Arb (acb_dft) or in binary64 with the Higham (2002, Thm 24.2) radix-2 error bound plus input/output rounding, added as ball radii. θ comes from acb_poly_lgamma_series with a certified cubic Taylor remainder. C0 is evaluated in Arb, and a point is certified only if |cos 2πp| > 1e-3 holds certifiably. R: |R| ≤ 0.127 (t/2π)^{-3/4} (Gabcke 1979).
+- Z(t) = 2Re(e^{iθ(t)} Σ_{n≤N} n^{-1/2} n^{-it}) + C0 + R. The Σ is from the batched Taylor-NUFFT: Arb phases, Taylor truncation enclosed by the explicit bound S0(πr)^L e^{πr}/L!, and the DFT done in Arb (acb_dft) or in binary64 with the Higham (2002, Thm 24.2) radix-2 error bound plus input/output rounding, added as ball radii. θ comes from acb_poly_lgamma_series with a certified cubic Taylor remainder. C0 is evaluated in Arb, and a point is certified only if |cos 2πp| > 1e-3 holds certifiably. R: |R₀| ≤ 0.127 t^{-3/4} (Gabcke 1979; see docs/GABCKE_SOURCES.md).
 Behind A2: Turing's method in Trudgian's form, |∫_{t1}^{t2} S(t)dt| ≤ 2.067 + 0.059 log t2 (Trudgian 2011, t ≥ 168π), with the ∫θ integrals enclosed by Arb Taylor bounds, and the gap integrals ∫ taken from certified sign changes only.
 
 ## Dependencies and status
 - Arb/FLINT 3.6 ball arithmetic: assumed correct. It is mature but not formally verified.
 - Higham FFT bound: published theorem. The constants as coded need a referee check, including that W[k] is rounded once.
-- Gabcke 1979, Riemann–Siegel remainder: |R_0(t)| < 0.127 t^{-3/4}, t ≥ 200. Second source: Kuznetsov, arXiv:2312.03261. The code uses the looser 0.127(t/2π)^{-3/4} (about 3.97× larger), so enclosures stay valid. Citation check only, not a re-proof; see `docs/GABCKE_CHECK.md`.
+- Gabcke 1979, Riemann–Siegel remainder: |R_0(t)| ≤ 0.127 t^{-3/4}, t ≥ 200. Second sources: Kuznetsov, arXiv:2312.03261; Gourdon–Sebah 2003; Platt–Trudgian arXiv:1507.01261; Arias de Reyna Math. Comp. 80 (2011). Earlier code used the looser 0.127(t/2π)^{-3/4} (about 3.97× larger); the code now uses 0.127 t^{-3/4}. Citation check only, not a re-proof; see `docs/GABCKE_SOURCES.md`, `docs/GABCKE_CHECK.md`.
 - Trudgian 2011 S(t)-integral bound: published. Constants are as quoted in the literature.
 - No independent second implementation of fftzcp yet.
 
@@ -48,7 +48,7 @@ Behind A2: Turing's method in Trudgian's form, |∫_{t1}^{t2} S(t)dt| ≤ 2.067 
 - Cost: clean windows take 15–17 s. A deficit window adds ≈1.8 s per sub-grid at 3e12 and ≈3.4 s at 1e13, so +70–190% here. The shared cache removes only the log/rsqrt part. The per-call O(N) phases and the L-term NUFFT still dominate.
 
 ## Remaining gaps
-1. Referee check of the Higham constants as coded (empirical check in `docs/DP_CHECK.md`, not a proof); an independent re-implementation. (Gabcke second source: done, `docs/GABCKE_CHECK.md`.)
+1. Referee check of the Higham constants as coded (empirical check in `docs/DP_CHECK.md`, not a proof); an independent re-implementation. (Gabcke second sources: done, `docs/GABCKE_SOURCES.md`, `docs/GABCKE_CHECK.md`.)
 2. Cost: each extra sub-grid costs O(N·L). A true batched multi-interval NUFFT (all suspect gaps in one transform), or a narrower first pick (want = deficit instead of deficit+4), would cut the overhead.
 3. Targeting is not tested on pairs closer than dr/10 = 1e-4 or on deficits near the window edges. Those can end UNPROVEN (sound, but needing a rerun), not wrong.
 4. Points within 1e-9 of each other are not resolved (they abort as a disagreement). A real pair closer than that would need exact-rational positions.

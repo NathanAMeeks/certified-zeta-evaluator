@@ -2,7 +2,7 @@ import sys,math,json,numpy as np
 src=open('cert2.py').read().split('z1=np.loadtxt')[0]; exec(src)
 from flint import ctx
 def Kfor(T,H):
-    N=int(math.sqrt(T/(2*math.pi))); R=math.log(N)/2; S0=2*math.sqrt(N); tol=0.1*0.127*(T/(2*math.pi))**-0.75
+    N=int(math.sqrt(T/(2*math.pi))); R=math.log(N)/2; S0=2*math.sqrt(N); tol=0.1*0.127*T**-0.75
     K=1
     while math.log(S0)+K*math.log(R*H)-math.lgamma(K+1)+R*H>math.log(tol): K+=1
     return N,K
