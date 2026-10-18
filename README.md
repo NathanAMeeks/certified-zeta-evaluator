@@ -16,7 +16,7 @@ This is an Arb-certified, FFT-batched evaluator for the Riemann–Siegel Z funct
 
 ## Unproven-constant dependencies
 Rigor depends on these published bounds, which are used as stated and not re-proven here:
-- Gabcke (1979), the Riemann–Siegel remainder: |R| ≤ 0.127 (t/2π)^{-3/4}.
+- Gabcke (1979), the Riemann–Siegel remainder: |R_0(t)| < 0.127 t^{-3/4} for t ≥ 200 (restated by Kuznetsov, arXiv:2312.03261). The code uses the looser 0.127 (t/2π)^{-3/4}, about 3.97× larger, so enclosures stay valid; see `docs/GABCKE_CHECK.md`.
 - Trudgian (2011), the S(t) integral: |∫S| ≤ 2.067 + 0.059 log t.
 
 ## Build and run
@@ -69,8 +69,8 @@ Main sums in double precision with rigorous (hand-derived) error bounds, lower A
 FFT-batched Riemann–Siegel evaluation is the Odlyzko–Schönhage method (1988). Gourdon (2004) and Platt (with Trudgian, 2021, fully interval-certified) used versions of it for record verifications. **This repository is an independent certified implementation, not a new method of proof.** Its contributions are a fresh reproducible implementation, the close-pair finder, and the measured timings.
 
 ## Open items / known limits
-- **Referee needed:** the Higham FFT bound application and the hand-derived double-precision error bounds coded in `c/speed/fftzsp.c`.
-- **Gabcke (1979) constant:** second independent source not yet confirmed.
+- **Referee needed:** the Higham FFT bound application and the hand-derived double-precision error bounds coded in `c/speed/fftzsp.c`. An empirical Arb-vs-double check found 0 violations over about 2.37M grid points, with observed error at most about 0.13% of the bound (`docs/DP_CHECK.md`); that is a consistency check, not a proof.
+- **Gabcke (1979) constant:** second source found (Kuznetsov, arXiv:2312.03261) agreeing on the statement; this is a citation check, not a re-proof (`docs/GABCKE_CHECK.md`).
 - **No independent reimplementation** has checked these results.
 - The C code has no per-point Arb-direct fallback (never needed in these runs).
 - `docs/REFEREE_FFT.md` lists 5 flaws in the earlier float bound (`python/fftb.py`), fixed in `fftarb.py` and the C code; treat `fftb.py` as superseded.

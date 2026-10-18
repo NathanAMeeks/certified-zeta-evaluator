@@ -195,6 +195,8 @@ static int cmp_pt(const void*x,const void*y){double a=((pt*)x)->u,b=((pt*)y)->u;
 /* usage: fftzr T delta P a b Lw [signfile] [dbl]  -- coarse grid, then automatic in-process refinement of wide gaps */
 int main(int argc,char**argv){
   double Td=atof(argv[1]),delta=atof(argv[2]); slong P=atol(argv[3]); double A=atof(argv[4]),B=atof(argv[5]),Lw=atof(argv[6]);
+  if(P<2||(P&(P-1))){fprintf(stderr,"error: P must be a power of two (the phase step q=hf*X is exact only then)\n");return 2;}
+  if(getenv("RPR")){slong r=atol(getenv("RPR")); if(r<2||(r&(r-1))){fprintf(stderr,"error: RPR must be a power of two\n");return 2;}}
   slong prec=PREC; if(argc>8) USE_DBL=1; double t0=now();
   signed char*sg=malloc(P); slong N,ncert; int Lt; double tm[4];
   zgrid(Td,delta,P,sg,&N,&Lt,&ncert,tm);

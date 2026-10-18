@@ -26,7 +26,7 @@ Everything is in Arb (python-flint 0.9, 110-bit precision):
 | 1e6 | 2 | 32 | 100% | 0 / 0 | 0.87 s | 0.50 ms | 5.7× | 953 (no table) |
 | 2.68e11 | 2 | 63 | 100% | 0 / 0 | 32 s | 0.237 s | 73× | 155 = 148 table + 7 below table start |
 At 1e4, the 7 uncertified points are |Z| below Gabcke's 5e-4 margin, right at zeros. The direct method can't certify them either. None of them hides a sign change.
-Remaining caveat: only Gabcke's constant, |Z(t) − (RS main sum + C0 term)| ≤ 0.127·(t/2π)^{-3/4} for t ≥ 200. Source: W. Gabcke, "Neue Herleitung und explizite Restabschätzung der Riemann-Siegel-Formel", Dissertation, Göttingen, 1979. It is restated in Platt–Trudgian, Math. Comp. 90 (2021), the RH-to-3e12 paper.
+Remaining caveat: only Gabcke's constant, |Z(t) − (RS main sum + C0 term)| < 0.127·t^{-3/4} for t ≥ 200 (the code uses the looser 0.127·(t/2π)^{-3/4}). Source: W. Gabcke, "Neue Herleitung und explizite Restabschätzung der Riemann-Siegel-Formel", Dissertation, Göttingen, 1979, doi:10.53846/goediss-5113. Restated in A. Kuznetsov, "Series expansions for the Riemann zeta function", arXiv:2312.03261. (An earlier version of this note wrongly cited Platt–Trudgian; their paper, Bull. London Math. Soc. 53 (2021), does not state it.) See `docs/GABCKE_CHECK.md`.
 Verdict [NUM]: certified sign evaluation is 73× faster than all-Arb direct RS at 2.68e11. Every grid sign is certified, and the sign changes match Odlyzko's table exactly. The speedup grows with N, roughly like N/K.
 
 ## v3: auto-tuner (auto_HK in cert2.py; tune.py, tune_results*.json) [NUM]
