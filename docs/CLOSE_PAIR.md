@@ -22,7 +22,7 @@ Behind A2: Turing's method in Trudgian's form, |∫_{t1}^{t2} S(t)dt| ≤ 2.067 
 ## Dependencies and status
 - Arb/FLINT 3.6 ball arithmetic: assumed correct. It is mature but not formally verified.
 - Higham FFT bound: published theorem. The constants as coded need a referee check, including that W[k] is rounded once.
-- Gabcke 1979, Riemann–Siegel remainder 0.127(t/2π)^{-3/4}, t ≥ 200: second source NOT yet confirmed by me. It is widely cited (e.g. in Platt's and Trudgian's work), but I haven't compared it against the thesis text. Open item.
+- Gabcke 1979, Riemann–Siegel remainder: |R_0(t)| < 0.127 t^{-3/4}, t ≥ 200. Second source: Kuznetsov, arXiv:2312.03261. The code uses the looser 0.127(t/2π)^{-3/4} (about 3.97× larger), so enclosures stay valid. Citation check only, not a re-proof; see `docs/GABCKE_CHECK.md`.
 - Trudgian 2011 S(t)-integral bound: published. Constants are as quoted in the literature.
 - No independent second implementation of fftzcp yet.
 
@@ -48,7 +48,7 @@ Behind A2: Turing's method in Trudgian's form, |∫_{t1}^{t2} S(t)dt| ≤ 2.067 
 - Cost: clean windows take 15–17 s. A deficit window adds ≈1.8 s per sub-grid at 3e12 and ≈3.4 s at 1e13, so +70–190% here. The shared cache removes only the log/rsqrt part. The per-call O(N) phases and the L-term NUFFT still dominate.
 
 ## Remaining gaps
-1. Gabcke constant second source; referee check of the Higham constants as coded; an independent re-implementation.
+1. Referee check of the Higham constants as coded (empirical check in `docs/DP_CHECK.md`, not a proof); an independent re-implementation. (Gabcke second source: done, `docs/GABCKE_CHECK.md`.)
 2. Cost: each extra sub-grid costs O(N·L). A true batched multi-interval NUFFT (all suspect gaps in one transform), or a narrower first pick (want = deficit instead of deficit+4), would cut the overhead.
 3. Targeting is not tested on pairs closer than dr/10 = 1e-4 or on deficits near the window edges. Those can end UNPROVEN (sound, but needing a rerun), not wrong.
 4. Points within 1e-9 of each other are not resolved (they abort as a disagreement). A real pair closer than that would need exact-rational positions.
@@ -68,7 +68,7 @@ Implementation:
 - θ', θ'' are taken as Arb balls over each 2-unit block. θ^{(k)}, k ≤ 5, are Arb balls over the whole window (lgamma series of length 6).
 - C̄ comes from c0term on the window ball, and ḡ from Gabcke at T+A.
 - Final comparisons are on outward-rounded doubles, with a 1e-9 relative margin covering ≤ 6 positive binary64 operations.
-**Dependencies:** the same as Lemma CP (Arb, Higham FFT bound, Gabcke 1979 constant unconfirmed second source). It additionally needs the RS main-term structure Z = f + C0 + R with |R| ≤ Gabcke for real t. No bound on R' or R'' is needed, because only f is differentiated.
+**Dependencies:** the same as Lemma CP (Arb, Higham FFT bound, Gabcke 1979 constant, second source in `docs/GABCKE_CHECK.md`). It additionally needs the RS main-term structure Z = f + C0 + R with |R| ≤ Gabcke for real t. No bound on R' or R'' is needed, because only f is differentiated.
 **Not done (rigorously): uniqueness inside sign-change gaps.** Proving that Z has exactly one zero in a sign-change gap needs control of Z' = f' + C0' + R', and no certified bound on R' is in hand. Uniqueness is still supplied by Lemma CP (Turing count). Missed pairs are counted only as pairs of certified sign changes located by refinement.
 **Role in the procedure:** gaps failing the test are "suspects". Refinement now considers only inter-zero gaps containing a suspect, ranked by severity thr/max(F_a, F_b), and picks ⌈deficit/2⌉+1 per round. Targeting remains heuristic, and soundness rests on Lemma CP. The consistency check `tz_violations` counts certified-zero-free gaps in which refinement later found a sign change, and must be 0.
 

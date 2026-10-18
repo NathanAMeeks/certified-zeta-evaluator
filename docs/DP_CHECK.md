@@ -1,6 +1,6 @@
 # Referee note: double-precision error bounds in c/speed/fftzsp.c
 
-Date: 2026-10-17. Harness: /workspace/dpcheck/dpcheck.c (fftzsp.c with main replaced; runs the all-Arb path and the double path on the same grid and compares F point by point).
+Date: 2026-10-17. Harness: `c/speed/dpcheck.c`, built by `c/speed/build.sh`, run as `dpcheck T delta P` (fftzsp.c with main replaced; runs the all-Arb path and the double path on the same grid and compares F point by point).
 
 Test: a violation means |F_dbl - mid(F_arb)| + rad(F_arb) > EPH for the real or imaginary part of any grid point.
 
