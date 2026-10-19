@@ -23,7 +23,7 @@ Behind A2: Turing's method in Trudgian's form, |∫_{t1}^{t2} S(t)dt| ≤ 2.067 
 - Arb/FLINT 3.6 ball arithmetic: assumed correct. It is mature but not formally verified.
 - Higham FFT bound: published theorem. The constants as coded need a referee check, including that W[k] is rounded once.
 - Gabcke 1979, Riemann–Siegel remainder: |R_0(t)| ≤ 0.127 t^{-3/4}, t ≥ 200. Second sources: Kuznetsov, arXiv:2312.03261; Gourdon–Sebah 2003; Platt–Trudgian arXiv:1507.01261; Arias de Reyna Math. Comp. 80 (2011). Earlier code used the looser 0.127(t/2π)^{-3/4} (about 3.97× larger); the code now uses 0.127 t^{-3/4}. Citation check only, not a re-proof; see `docs/GABCKE_SOURCES.md`, `docs/GABCKE_CHECK.md`.
-- Trudgian 2011 S(t)-integral bound: published. Constants are as quoted in the literature.
+- Trudgian 2011 S(t)-integral bound: |∫S| ≤ 2.067 + 0.059 log t₂ for t₂>t₁>168π (Math. Comp. 80 Thm 2.2; see docs/TRUDGIAN_SOURCES.md).
 - No independent second implementation of fftzcp yet.
 
 ## Results (δ=0.01, P=2^20, window [T+60, T+10380], Lw=50, binary64 FFT with rigorous bound; 4 jobs in parallel on 8 cores)
@@ -68,7 +68,7 @@ Implementation:
 - θ', θ'' are taken as Arb balls over each 2-unit block. θ^{(k)}, k ≤ 5, are Arb balls over the whole window (lgamma series of length 6).
 - C̄ comes from c0term on the window ball, and ḡ from Gabcke at T+A.
 - Final comparisons are on outward-rounded doubles, with a 1e-9 relative margin covering ≤ 6 positive binary64 operations.
-**Dependencies:** the same as Lemma CP (Arb, Higham FFT bound, Gabcke 1979 constant, second source in `docs/GABCKE_CHECK.md`). It additionally needs the RS main-term structure Z = f + C0 + R with |R| ≤ Gabcke for real t. No bound on R' or R'' is needed, because only f is differentiated.
+**Dependencies:** the same as Lemma CP (Arb, Higham FFT bound, Gabcke 1979 constant, second sources confirmed 2026-10-18 in `docs/GABCKE_SOURCES.md`, `docs/GABCKE_CHECK.md`). It additionally needs the RS main-term structure Z = f + C0 + R with |R| ≤ Gabcke for real t. No bound on R' or R'' is needed, because only f is differentiated.
 **Not done (rigorously): uniqueness inside sign-change gaps.** Proving that Z has exactly one zero in a sign-change gap needs control of Z' = f' + C0' + R', and no certified bound on R' is in hand. Uniqueness is still supplied by Lemma CP (Turing count). Missed pairs are counted only as pairs of certified sign changes located by refinement.
 **Role in the procedure:** gaps failing the test are "suspects". Refinement now considers only inter-zero gaps containing a suspect, ranked by severity thr/max(F_a, F_b), and picks ⌈deficit/2⌉+1 per round. Targeting remains heuristic, and soundness rests on Lemma CP. The consistency check `tz_violations` counts certified-zero-free gaps in which refinement later found a sign change, and must be 0.
 
