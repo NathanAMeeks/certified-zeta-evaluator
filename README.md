@@ -65,6 +65,12 @@ Main sums in double precision with rigorous (hand-derived) error bounds, lower A
 
 **Crude per-GHz comparison [HEUR]:** Platt–Trudgian (arXiv:2004.09765) ≈ 7.9 ms·GHz per zero; Gourdon (2004, not interval-certified) ≈ 0.011; ours ≈ 0.22–0.26. That suggests ~30× fewer cycles per zero than Platt–Trudgian and ~20× more than Gourdon. Caveats: their figures average a full production run over all heights, ours are short top-height windows; different CPU generations make GHz normalization crude; ours is not a production run.
 
+## Band-limited interpolation, v7 [NUM][LEM] (`c/interp/fftzi_v7.c`, `docs/SPEED2.md`)
+- Certified Gaussian-windowed sinc interpolation of the main sum (Lemma BL, own derivation, needs a referee) plus extremum targeting and a certified midpoint sign-flip probe for close pairs.
+- Measured: two contiguous chains above 3x10^12 and 10^13 (132,506 and 138,439 zeros) at 0.0050-0.0055 ms/zero; all 10 test windows PROVEN at 0.0069-0.0079 ms/zero, with 0 sign disagreements. Certification is unchanged: certified sign changes must equal Turing's count.
+- Credit: the certified midpoint sign-flip probe is Nathan A. Meeks' idea, first recorded in "Phase-Coherent Holographic Compression" (X Article, Feb 18, 2026, https://x.com/NathanAMeeks/status/2024058294244180131).
+- Build with `FLINT_ROOT=/prefix c/interp/build.sh`. Usage is in `docs/SPEED2.md`.
+
 ## Prior art
 FFT-batched Riemann–Siegel evaluation is the Odlyzko–Schönhage method (1988). Gourdon (2004) and Platt (with Trudgian, 2021, fully interval-certified) used versions of it for record verifications. **This repository is an independent certified implementation, not a new method of proof.** Its contributions are a fresh reproducible implementation, the close-pair finder, and the measured timings.
 
