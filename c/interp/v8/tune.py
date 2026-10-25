@@ -1,6 +1,6 @@
 # v8 gated self-tuner (search-only knobs). Proof logic untouched: every run must be PROVEN (Lemma CP) or the knob is rejected.
 import subprocess,json,os,statistics as st,sys
-D='/workspace/meeks_test/refine/speed2'; BIN=sys.argv[1] if len(sys.argv)>1 else D+'/fftzi_v8'
+import os as _o; D=_o.environ.get('V8DIR', _o.path.dirname(_o.path.dirname(_o.path.abspath(__file__)))); BIN=sys.argv[1] if len(sys.argv)>1 else D+'/fftzi_v8'
 W=[(t,65536,10400) for t in (2999999999980,3000000019980,3000000039980,3000000010300,9999999999980,10000000010300,10000000020620,3000000051580,3000000061900,3000000072220)]+[(3000000051580,131072,31040),(9999999999980,131072,31040)]
 def run(env,reps=3,delta='0.24'):
   out=[]
