@@ -11,3 +11,4 @@ c/speed/fftzsp
 *.err
 c/speed/dpcheck
 c/interp/fftzi_v7
+c/interp/fftzi_v8

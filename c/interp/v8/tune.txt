@@ -1,0 +1,29 @@
+---
+pid: 8601
+cwd: "/workspace/meeks_test/refine/speed2/v8"
+command: "cd /workspace/meeks_test/refine/speed2/v8 && cat > tune.py <<'EOF'\n# v8 gated self-tuner (search-only knobs). Proof logic untouched: every run must be PROVEN (Lemma CP) or the knob is rejected.\nimport subprocess,json,os,statistics as st,sys\nD='/workspace/meeks_test/refine/speed2'; BIN=sys.argv[1] if len(sys.argv)>1 else D+'/fftzi_v8'\nW=[(t,65536,10400) for t in (2999999999980,3000000019980,3000000039980,3000000010300,9999999999980,10000000010300,10000000020620,3000000051580,3000000061900,3000000072220)]+[(3000000051580,131072,31040),(9999999999980,131072,31040)]\ndef run(env,reps=3,delta='0.24'):\n  out=[]\n  for r in range(reps):\n    for T,P,B in W:\n      e=dict(os.environ,AHCACHE=D+'/ahcache.bin',**env)\n      p=subprocess.run(['taskset','-c','7',BIN,str(T),delta,str(P),'80',str(B),'60','/dev/null','dbl'],env=e,capture_output=True,text=True,cwd=D)\n      d=json.loads(p.stdout); out.append((d['ms_per_zero'],d['status'],d['evals_per_zero'],d['sec_setup'],d['found'],d['Na_lower'],d['Nb_upper']))\n  return out\ndef summ(o):\n  m=[x[0] for x in o]; return dict(min=min(m),med=st.median(m),max=max(m),proven=sum(x[1]=='PROVEN' for x in o),n=len(o),evals=st.median([x[2] for x in o]),setup=st.median([x[3] for x in o]))\nif __name__=='__main__':\n  base=run({}); b=summ(base)\n  # noise: spread of per-rep medians of baseline\n  reps=[st.median([x[0] for x in base[i*12:(i+1)*12]]) for i in range(3)]; noise=max(reps)-min(reps)\n  print('BASE',b,'noise',round(noise,5),flush=True)\n  cands=[('KGATE','0.2'),('KGATE','0.3'),('KT5','0.4'),('KT5','0.6'),('KFLAT','0.05'),('KFLAT','0.2'),('NDIV','6'),('NDIV','10'),('DIPTAU','2.5'),('DIPTAU','3.5'),('MAXR','4'),('DELTA','0.22'),('DELTA','0.23')]\n  kept={}\n  for k,v in cands:\n    o=run({},delta=v) if k=='DELTA' else run({k:v}); s=summ(o)\n    ok=s['proven']==s['n'] and s['med']<b['med']-noise and all(x[4:]==y[4:] for x,y in zip(o,base))\n    print('CAND',k,v,s,'KEEP' if ok else 'REVERT',flush=True)\n    if ok: kept[k]=(v,s['med'])\n  print('KEPT',kept)\nEOF\npython3 tune.py 2>&1 | tee tune.txt"
+status: succeeded
+started_at: 2026-10-22T16:21:59.986Z
+running_for_ms: 659092   
+---
+BASE {'min': 0.0055, 'med': 0.0082, 'max': 0.009, 'proven': 36, 'n': 36, 'evals': 1.705, 'setup': 0.037} noise 0.0005
+CAND KGATE 0.2 {'min': 0.0052, 'med': 0.00775, 'max': 0.0087, 'proven': 36, 'n': 36, 'evals': 1.705, 'setup': 0.0365} REVERT
+CAND KGATE 0.3 {'min': 0.0055, 'med': 0.00805, 'max': 0.0092, 'proven': 36, 'n': 36, 'evals': 1.705, 'setup': 0.037} REVERT
+CAND KT5 0.4 {'min': 0.0055, 'med': 0.0082, 'max': 0.0122, 'proven': 36, 'n': 36, 'evals': 1.705, 'setup': 0.0395} REVERT
+CAND KT5 0.6 {'min': 0.0055, 'med': 0.00805, 'max': 0.0099, 'proven': 36, 'n': 36, 'evals': 1.705, 'setup': 0.037} REVERT
+CAND KFLAT 0.05 {'min': 0.0055, 'med': 0.008150000000000001, 'max': 0.0093, 'proven': 36, 'n': 36, 'evals': 1.705, 'setup': 0.0375} REVERT
+CAND KFLAT 0.2 {'min': 0.0054, 'med': 0.0079, 'max': 0.0088, 'proven': 36, 'n': 36, 'evals': 1.705, 'setup': 0.036} REVERT
+CAND NDIV 6 {'min': 0.0055, 'med': 0.008, 'max': 0.0119, 'proven': 36, 'n': 36, 'evals': 1.705, 'setup': 0.0365} REVERT
+CAND NDIV 10 {'min': 0.0055, 'med': 0.0079, 'max': 0.009, 'proven': 36, 'n': 36, 'evals': 1.705, 'setup': 0.0365} REVERT
+CAND DIPTAU 2.5 {'min': 0.0058, 'med': 0.0084, 'max': 0.0125, 'proven': 36, 'n': 36, 'evals': 1.705, 'setup': 0.046} REVERT
+CAND DIPTAU 3.5 {'min': 0.0055, 'med': 0.0082, 'max': 0.0096, 'proven': 36, 'n': 36, 'evals': 1.705, 'setup': 0.036} REVERT
+CAND MAXR 4 {'min': 0.0055, 'med': 0.00805, 'max': 0.0089, 'proven': 36, 'n': 36, 'evals': 1.705, 'setup': 0.036} REVERT
+CAND DELTA 0.22 {'min': 0.0077, 'med': 0.0085, 'max': 0.3752, 'proven': 30, 'n': 36, 'evals': 1.676, 'setup': 0.039} REVERT
+CAND DELTA 0.23 {'min': 0.0075, 'med': 0.00835, 'max': 0.2792, 'proven': 30, 'n': 36, 'evals': 1.6905000000000001, 'setup': 0.0365} REVERT
+KEPT {}
+
+---
+exit_code: 0
+elapsed_ms: 659092
+ended_at: 2026-10-22T16:32:59.078Z
+---

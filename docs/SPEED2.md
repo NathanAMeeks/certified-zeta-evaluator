@@ -311,3 +311,38 @@ Code: fftzi_v7.c (v5 fftzi.c and v6 kept). Build: v6/build_v7.sh. Data: v6/v6_pi
 
 **Credit (§13):** The certified midpoint sign-flip probe used in v7 is Nathan A. Meeks' idea, implemented here.
 Prior record: N. A. Meeks, "Phase-Coherent Holographic Compression," X Article, Feb 18, 2026, https://x.com/NathanAMeeks/status/2024058294244180131
+
+## §14 v8: delta cache extender + gated self-correction [NUM, candidate, unrefereed]
+
+Directed by Nathan A. Meeks (delta cache extender, gated self-correcting loop); implemented here. Proof logic unchanged (Lemma CP, Gabcke/Trudgian, DP error bounds, Lemma BL untouched); all changes are search/setup only.
+
+**Diagnosis (confirmed in code).** v7 `ah_load` rejects the AH cache when stored N < floor(sqrt(T/2π)) (1e13 cache: N=1,261,566; 1.5e13 needs 1,545,096; 2e13 needs 1,784,124). zgrid then rebuilds all N Arb logs from scratch (~1.7–1.9 s) and overwrites the file.
+
+**Delta cache extender (`fftzi_v8.c`).** Load a short cache as a prefix, compute only n = N_old+1..N_target with the same Arb ops at PREC=96, take ARAD = max(old, new), and save. Target = N(T(1+AHXS)) rounded up to AHXC. Checks: extending the 1e13 cache to 2e13 gives a file byte-identical (`cmp`) to a fresh 2e13 build. Found counts, Na and Nb match v7 at 1.5e13 and 2e13. Setup on a cache miss drops from 1.68 s to 0.06 s + 0.10 s extension (1.5e13) and from 1.86 s to 0.06 s + 0.19 s (2e13). `NOAHX=1` restores v7 behaviour.
+Squeezed-delta sweep (v8/sweep.txt): 8 sliding windows across 1.5e13, 2e13, 2.5e13, with AHXS ∈ {0, 1e-3, 1e-2, 0.1} and AHXC ∈ {1, 65536}. All settings give one extension per height jump (0.07–0.14 s). Slack makes no measurable difference, because N grows by about 0.0005 per 10^4 of height. Chosen: AHXS=0, AHXC=65536.
+
+**Self-correcting loop (`v8/v8run.sh`).** If a window comes back not PROVEN, the driver re-runs it from scratch at δ = 0.2, then 0.16, then 0.12, doubling P when needed to keep the span. Every attempt is a full independent certification, and only a PROVEN result is accepted. This catches a hard window found during the sweep, T=20000000020800: v7 gives UNPROVEN_budget (47284 of 47286, also with NOFASTH and MAXR=60). v8 proves it at δ=0.2: 47286 = Turing, PROVEN. The failed first attempt costs about 1.6 s of wall time, so the retry is not free.
+
+**Gated self-tuner (`v8/tune.py`, v8/tune.txt).** Knobs: KGATE, KT5, KFLAT, NDIV, DIPTAU, MAXR, δ. Each was run on the 12 bench windows/chains × 3 pinned repeats. A knob is kept only if every run is PROVEN with identical found/Na/Nb AND the median drops by more than the noise (spread of the per-repeat baseline medians, 0.0005 ms/zero).
+
+| Knob | Result |
+|---|---|
+| δ=0.22, δ=0.23 | 6 of 36 runs fail their proof → rejected |
+| KGATE=0.2 (0.00775) | Closest miss, still inside noise |
+| All other knobs | Inside noise |
+
+KEPT = none, so v8 ships v7's search defaults.
+
+**Before/after (pinned, 3 reps, v8/final.txt):**
+
+| set | ver | min | med | max ms/zero | setup med s | evals/zero | PROVEN |
+|---|---|---|---|---|---|---|---|
+| 12 bench | v7 | .0056 | .0082 | .0106 | .038 | 1.705 | 36/36 |
+| 12 bench | v8 | .0078 | .0085 | .0095 | .036 | 1.706 | 36/36 |
+| 6 new (4e12…2e13 + hard 2e13+20800) | v7 | .0079 | .0089 | .0353 | .054 | 1.673 | 15/18 |
+| 6 new | v8 | .0079 | .0087 | .0124 | .054 | 1.657 | 18/18 |
+
+Notes:
+- Bench timings are the same within noise. v8's win is robustness: cache misses (about 5x faster setup on the first window at a new height) and self-corrected proofs.
+- In the v8 rows of the table, ms/zero for the retried window counts only the attempt that succeeded.
+- The final table was run on the already-extended cache, so it does not show v7's cold-miss penalty. That penalty is shown above (1.7–1.9 s vs 0.16–0.25 s).
