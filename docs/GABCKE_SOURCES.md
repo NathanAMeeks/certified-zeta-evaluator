@@ -27,3 +27,6 @@ Window T = 3,000,000,010,320 (closepair/tz build, same arguments as `results/clo
 Earlier code and some docs wrote |R| ≤ 0.127 (t/2π)^{-3/4}. That is larger than Gabcke's published bound by a factor (2π)^{3/4} ≈ 3.97, so it was still *sound* (strictly more conservative) but not the constant as stated. All `gabcke` / `gab` helpers now use 0.127 t^{-3/4}.
 
 Do **not** cite the RH-to-3×10¹² paper (Platt–Trudgian, Bull. Lond. Math. Soc. 53 (2021), arXiv:2004.09765) as the source of the 0.127 figure: it uses Gabcke-style RS machinery but does not restate that constant.
+
+## Re-check of v7/v8 with the corrected form (2026-10-28) [NUM]
+`c/interp/fftzi_v7.c` and `fftzi_v8.c` (plus `c/speed/dpcheck.c`) now also use 0.127 t^{-3/4}. v8 (`v8/v8run.sh`, same arguments as `v8/final.py`) rerun on 8 windows: T = 2999999999980, 3000000010300, 9999999999980, 10000000020620 (P=65536, B=10400), 3000000051580 (P=131072, B=31040), 1.5e13, 2e13, and the hard window 2e13+20800. All PROVEN, with certified sign changes equal to the Turing count (44169, 44169, 46145, 46146, 132506, 46813, 47285, 47286). The hard window still needs the δ=0.2 retry. Candidate, unrefereed.
