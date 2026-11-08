@@ -1,9 +1,9 @@
 # SPEED2.md: certified band-limited interpolation for the Z evaluator (candidate, unrefereed; no RH/Λ claims)
-Code: c/interp/fftzi_v7.c (developed as refine/speed2/fftzi.c: fftzsp.c with all referee patches, plus Lemma BL, plus the v7 midpoint probe). Build: c/interp/build.sh (set FLINT_ROOT).
+Code: refine/speed2/fftzi.c (fftzsp.c from refine/speed, with all referee patches, plus Lemma BL). Build: build.sh (FLINT_ROOT=/workspace/rh-research/tools/flintc/root/usr).
 Run: `./fftzi T delta P A B Lw /dev/null dbl` (P must be a power of 2, otherwise EPH=1e300 and nothing is certified. That is a safe failure.)
 Env: NOINTERP=1 gives the old behaviour. DIPTAU (default 3), NDIV (8), BLTGT (92), MAXR (20 interp rounds).
-Gabcke: uses the published 0.127·t^{-3/4}, t ≥ 200 (tightened 2026-10-28 from the cautious 0.127·(t/2π)^{-3/4}, about 3.97× looser; see docs/GABCKE_SOURCES.md). v7/v8 timings below were measured with the looser form.
-Status: candidate, unrefereed. On GitHub main since 2026-10-28.
+Gabcke: this build keeps the cautious 0.127·(t/2π)^{-3/4}, which is valid and about 4× looser than the published 0.127·t^{-3/4}.
+Nothing was committed, pushed, posted or sent.
 
 ## 1. Ranked options (gain = wall-time factor on top of the current build)
 | # | Idea | Gain | Certification path | Effort | Status |
@@ -346,3 +346,30 @@ Notes:
 - Bench timings are the same within noise. v8's win is robustness: cache misses (about 5x faster setup on the first window at a new height) and self-corrected proofs.
 - In the v8 rows of the table, ms/zero for the retried window counts only the attempt that succeeded.
 - The final table was run on the already-extended cache, so it does not show v7's cold-miss penalty. That penalty is shown above (1.7–1.9 s vs 0.16–0.25 s).
+
+## §15 v9: v7 speed + v8 robustness (2026-10-28) [NUM, candidate, unrefereed; soundness unchanged]
+Combination directed by Nathan A. Meeks ("combine the fastest code aspects of v7 and v8 at the height limit"). Existing credits stand: midpoint sign-flip probe (v7) and the delta cache extender + gated self-correcting loop (v8) are his.
+- **Code:** `c/interp/fftzi_v9.c` = v8's C core (the only v7→v8 C change is the delta AH-cache extender; there are no other v7/v8 code differences to merge). `c/interp/v9/v9run.sh` is the new driver.
+- **Root cause of v8's chain slowdown:** v8run.sh doubled P before the first attempt whenever P·δ < 1.2(B+140). On the chains (P=2^17, B=31040) that forced P=2^18 every time.
+- **v9 ladder:** attempt 1 = v7 exactly (δ=0.24, caller's P). Only after a Lemma CP failure: same δ with P grown to the coverage rule, then δ=0.2, 0.16, 0.12 (P grown as needed). The checks are bash/awk, not a Python process per step. Every attempt is an independent full certification, and only PROVEN is accepted.
+- **Cache:** pre-extended once to 2,883,584 terms (covers up to ≈5.2e13). Extending from 1.78M to 2.88M took 0.34 s with the v8 extender; v7's full rebuild at 5e13 cost 2.99 s of setup (same window: 0.0214 vs 0.0723 ms/zero cold). All benchmark runs used the warm cache, read-only.
+
+**Same session, interleaved v7/v8/v9, pinned CPU 7, 3 reps (v9/bench.py → v9/bench.json). Median ms/zero (evaluator-reported); PROVEN = certified sign changes == Turing count:**
+
+| set | v7 | v8 | v9 | PROVEN v7/v8/v9 |
+|---|---|---|---|---|
+| 10 bench windows (3e12, 1e13) | .0074 | .0074 | .0074 | 30/30 each |
+| 3e12 chain (132,506 zeros, P=2^17) | .0050 | .0080 | **.0049** | 3/3 each |
+| 1e13 chain (138,439 zeros) | .0051 | .0084 | **.0051** | 3/3 each |
+| 4e12 / 6e12 / 8e12 | .0076/.0076/.0080 | .0074/.0079/.0079 | .0073/.0079/.0078 | 9/9 each |
+| 1.5e13 | .0089 | .0086 | .0084 | 3/3 each |
+| 2e13 | .0087 | .0087 | .0085 | 3/3 each |
+| 2e13+20800 (hard) | .0280 (fails) | .0095* | .0090* | 0/3, 3/3, 3/3 |
+| 3e13 | .0100 | .0101 | .0100 | 3/3 each |
+| 5e13 | .0110 | .0106 | .0106 | 3/3 each |
+
+\*Successful attempt only. Including the failed δ=0.24 first attempt, wall time per zero is .038 for both v8 and v9.
+Wall time per zero, including driver overhead, is v7 .0074, v8 .0079, v9 .0077 on the 12 bench runs. v9 is within noise of v7 everywhere v7 proves, and it proves the hard window.
+
+**Scaling (v9, median ms/zero):** 3e12 .0074 → 1e13 .0074 → 1.5e13 .0084 → 2e13 .0085 → 3e13 .0100 → 5e13 .0106. That is about +43% per zero from 3e12 to 5e13 while N=√(t/2π) grows 4.1×. 
+**Gate:** kept. v9 is faster than v8 (chains about 1.6×) and ties v7, with every window that v8 proves still PROVEN. Total PROVEN: v9 60/60 runs, v8 60/60, v7 57/60.

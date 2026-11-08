@@ -1,0 +1,27 @@
+{
+ "next_T": 3001701754000,
+ "next_idx": 165468,
+ "N_start": 12362403019661,
+ "N_last_hi": 12369686529136,
+ "covered_lo": 3000000000000.0,
+ "covered_hi": 3001701754120.0,
+ "windows": 165468,
+ "zeros": 7283509475,
+ "failures": 9,
+ "last_run": "2026-11-03T02:38:52-07:00",
+ "last_result": "[NUM] batch HALTED: open failure recorded in /workspace/rh_extend/FAILED.md (window T=3001701754000); covered to 3.001701754e+12; fix/resolve then move FAILED.md aside",
+ "params": {
+  "A": 80,
+  "P": 65536,
+  "B": 10400,
+  "OVL": 40,
+  "STEP": 10280
+ },
+ "ledger_rows": 165478,
+ "clog_bytes": 478609056,
+ "verified_rows": 164527,
+ "last_full_verify": 1793637702.1133895,
+ "last_full_verify_iso": "2026-11-02T09:41:42-07:00",
+ "clean": false,
+ "verify_cursor": 3072
+}

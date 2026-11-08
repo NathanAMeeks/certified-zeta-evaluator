@@ -1,0 +1,17 @@
+{
+  "result": "PASS",
+  "bracket_files": 165468,
+  "metadata_files": [
+    "BOUNDARY.json",
+    "BRACKETS_SHA256.tsv",
+    "checkpoint.json",
+    "commit_indices.jsonl",
+    "committed_ledger.csv",
+    "fixes_ledger.csv",
+    "gates.jsonl",
+    "windows.jsonl"
+  ],
+  "total_entries": 165476,
+  "payload_bytes": 19639443820,
+  "scope": "Every tar member read and hashed; all compressed bracket bytes matched source manifest; safe relative regular-file entries only. Not a full decompressed mathematical proof rerun."
+}

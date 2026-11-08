@@ -3,5 +3,5 @@
 cd "$(dirname "$0")"
 R=${FLINT_ROOT:-/usr}
 I="-I$R/include -I$R/include/x86_64-linux-gnu"; L="-L$R/lib -L$R/lib/x86_64-linux-gnu -Wl,-rpath,$R/lib:$R/lib/x86_64-linux-gnu"
-gcc -O3 -march=native -ffp-contract=off $I fftzi_v7.c -o fftzi_v7 $L -lflint -lmpfr -lgmp -lm || exit 1
+for v in v7 v8 v9; do gcc -O3 -march=native -ffp-contract=off $I fftzi_$v.c -o fftzi_$v $L -lflint -lmpfr -lgmp -lm || exit 1; done
 echo built

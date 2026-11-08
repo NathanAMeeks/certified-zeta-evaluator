@@ -1,0 +1,1 @@
+[NUM] batch OK: T 3.000770695e+12->3.000774807e+12, +17599347 zeros, 400 windows PROVEN, total covered to 3.000774807e+12 (3316153698 zeros since 3e12); failures 0; 0.8 min (candidate, unrefereed; not RH)

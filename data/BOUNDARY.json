@@ -1,0 +1,17 @@
+{
+  "next_idx": 165468,
+  "last_committed_idx": 165467,
+  "coverage_lo": 3000000000000,
+  "coverage_hi": 3001701754120,
+  "N_start": 12362403019661,
+  "N_last_hi": 12369686529136,
+  "net_zeros": 7283509475,
+  "PROVEN_rows": 165468,
+  "ledger_raw_sha_rows": 67250,
+  "legacy_rows_without_raw_sha": 98218,
+  "bracket_files": 165468,
+  "bracket_compressed_bytes": 19453677984,
+  "excluded_attempt_rows": 9,
+  "excluded_idx": 165468,
+  "note": "Contiguity/count-chain checked. Not a fresh full mathematical re-certification. Historical mixed-width ledger normalized without altering core fields."
+}
